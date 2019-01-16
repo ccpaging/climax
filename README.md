@@ -1,8 +1,8 @@
 # Climax
 >Climax is an alternative CLI that looks like Go command
 
-[![GoDoc](https://godoc.org/github.com/tucnak/climax?status.svg)](https://godoc.org/github.com/tucnak/climax)
-[![Travis](https://travis-ci.org/tucnak/climax.svg?branch=master)](https://travis-ci.org/ccpaging/climax)
+[![GoDoc](https://godoc.org/github.com/ccpaging/climax?status.svg)](https://godoc.org/github.com/ccpaging/climax)
+[![Travis](https://travis-ci.org/ccpaging/climax.svg?branch=master)](https://travis-ci.org/ccpaging/climax)
 
 **Climax** is a handy alternative CLI (command-line interface) for Go apps.
 It looks pretty much exactly like the output of the default `go` command and
