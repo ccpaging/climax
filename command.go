@@ -3,7 +3,7 @@ package climax
 // CmdHandler is a handling function type for functions.
 //
 // Returned integer would be used as application exit status.
-type CmdHandler func(Context) int
+type CmdHandler func(*Context) int
 
 // Command represents a top-level application subcommand.
 type Command struct {
@@ -47,24 +47,24 @@ type Command struct {
 	Handle CmdHandler
 
 	// Flags are command-line options.
-	Flags []Flag
+	Flags []*Flag
 
 	// Examples are annotated tips on command usage.
-	Examples []Example
+	Examples []*Example
 }
 
 // AddFlag does literally what its name says.
-func (c *Command) AddFlag(newFlag Flag) {
+func (c *Command) AddFlag(newFlag *Flag) {
 	c.Flags = append(c.Flags, newFlag)
 }
 
 // AddExample does exactly what its name says.
-func (c *Command) AddExample(newExample Example) {
+func (c *Command) AddExample(newExample *Example) {
 	c.Examples = append(c.Examples, newExample)
 }
 
 // Run executes a command handler and returns corresponding exitcode.
-func (c Command) Run(context Context) int {
+func (c Command) Run(context *Context) int {
 	return c.Handle(context)
 }
 

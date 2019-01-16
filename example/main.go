@@ -1,24 +1,24 @@
-package climax_test
+package main
 
 import (
 	"fmt"
-	"github.com/tucnak/climax"
 	"strings"
+	"github.com/ccpaging/climax"
 )
 
-func Example_application() {
+func main() {
 	demo := climax.New("demo")
 	demo.Brief = "Demo is a funky demonstation of Climax capabilities."
 	demo.Version = "stable"
 
-	joinCmd := climax.Command{
+	joinCmd := &climax.Command{
 		Name:  "join",
 		Brief: "merges the strings given",
 		Usage: `[-s=] "a few" distinct strings`,
 		Help:  `Lorem ipsum dolor sit amet amet sit todor...`,
 
-		Flags: []climax.Flag{
-			{
+		Flags: []*climax.Flag{
+			&climax.Flag{
 				Name:     "separator",
 				Short:    "s",
 				Usage:    `--separator="."`,
@@ -27,14 +27,14 @@ func Example_application() {
 			},
 		},
 
-		Examples: []climax.Example{
-			{
+		Examples: []*climax.Example{
+			&climax.Example{
 				Usecase:     `-s . "google" "com"`,
 				Description: `Results in "google.com"`,
 			},
 		},
 
-		Handle: func(ctx climax.Context) int {
+		Handle: func(ctx *climax.Context) int {
 			var separator string
 			if sep, ok := ctx.Get("separator"); ok {
 				separator = sep

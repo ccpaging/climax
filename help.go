@@ -72,7 +72,7 @@ func alignMultilineHelp(text string) string {
 	return strings.Replace(text, "\n", "\n\t\t", -1)
 }
 
-func commandUsage(command Command) string {
+func commandUsage(command *Command) string {
 	if command.Usage != "" {
 		return command.Name + " " + command.Usage
 	}
@@ -85,7 +85,7 @@ func commandUsage(command Command) string {
 	return usage
 }
 
-func flagUsage(flag Flag, tiny bool) string {
+func flagUsage(flag *Flag, tiny bool) string {
 	if tiny {
 		if flag.Short != "" {
 			return "-" + flag.Short
@@ -113,20 +113,20 @@ func flagUsage(flag Flag, tiny bool) string {
 
 func (a *Application) globalHelp() string {
 	return templated(globalHelpTemplate, struct {
-		Application
+		*Application
 		UngroupedCount int
 	}{
-		*a,
+		a,
 		a.ungroupedCmdsCount,
 	})
 }
 
 func (a *Application) commandHelp(command *Command) string {
 	return templated(commandHelpTemplate, struct {
-		Command
+		*Command
 		App string
 	}{
-		*command,
+		command,
 		a.Name,
 	})
 }

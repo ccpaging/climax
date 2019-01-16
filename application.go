@@ -141,7 +141,7 @@ func (a *Application) Run() int {
 			return 0
 		}
 
-		return a.Default(*newContext(a))
+		return a.Default(newContext(a))
 	}
 
 	yankeeGoHome := func(errMsg string) {
@@ -177,7 +177,7 @@ func (a *Application) Run() int {
 
 	if subcommandName == "version" {
 		if subcommand != nil {
-			return subcommand.Run(Context{})
+			return subcommand.Run(&Context{})
 		}
 
 		a.printf("%s version %s\n", a.Name, a.Version)
@@ -190,7 +190,7 @@ func (a *Application) Run() int {
 			yankeeGoHome(err.Error())
 		}
 
-		return subcommand.Run(*context)
+		return subcommand.Run(context)
 	}
 
 	yankeeGoHome("unknown subcommand \"" + subcommandName + "\"\n")

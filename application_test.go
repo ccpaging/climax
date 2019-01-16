@@ -90,16 +90,16 @@ func TestRun_Help(t *testing.T) {
 		Brief: "starts a web server",
 		Usage: "-http=4747",
 		Help:  "Lorem ipsum dolor sit amet amet sit.",
-		Flags: []Flag{
-			{
+		Flags: []*Flag{
+			&Flag{
 				Name:  "http",
 				Short: "p",
 				Usage: "-http=4747",
 				Help:  "Specify the port of server's HTTP interface.",
 			},
 		},
-		Examples: []Example{
-			{
+		Examples: []*Example{
+			&Example{
 				Usecase:     "-http 4747",
 				Description: "Start a server on http port 4747.",
 			},
@@ -156,7 +156,7 @@ func TestAddTopic(t *testing.T) {
 
 func TestAddFlag(t *testing.T) {
 	var c Command
-	c.AddFlag(Flag{})
+	c.AddFlag(&Flag{})
 	if len(c.Flags) != 1 {
 		t.Error("broken")
 	}
@@ -164,7 +164,7 @@ func TestAddFlag(t *testing.T) {
 
 func TestAddExample(t *testing.T) {
 	var c Command
-	c.AddExample(Example{})
+	c.AddExample(&Example{})
 	if len(c.Examples) == 0 {
 		t.Error("failed to add example")
 	}

@@ -7,7 +7,7 @@ import (
 
 func TestContext(t *testing.T) {
 	app := &Application{}
-	check := func(c string, f []Flag, a []string, exp Context) {
+	check := func(c string, f []*Flag, a []string, exp Context) {
 		exp.app = app
 
 		ctx, err := app.parseContext(f, a)
@@ -24,7 +24,7 @@ func TestContext(t *testing.T) {
 		}
 	}
 
-	mustFail := func(c string, f []Flag, a []string) {
+	mustFail := func(c string, f []*Flag, a []string) {
 		_, err := app.parseContext(f, a)
 		if err == nil {
 			t.Errorf(`invalid case "%s" resulted in valid context`, c)
@@ -34,16 +34,16 @@ func TestContext(t *testing.T) {
 	// PASS TESTS
 	// ==========
 
-	check("no args", []Flag{}, []string{}, *newContext(app))
+	check("no args", []*Flag{}, []string{}, *newContext(app))
 
-	check("no flags", []Flag{}, []string{"argument", "a thing"}, Context{
+	check("no flags", []*Flag{}, []string{"argument", "a thing"}, Context{
 		Args:        []string{"argument", "a thing"},
 		NonVariable: map[string]bool{},
 		Variable:    map[string]string{},
 	})
 
-	check("single non-var flag", []Flag{
-		Flag{Name: "force"},
+	check("single non-var flag", []*Flag{
+		&Flag{Name: "force"},
 	}, []string{"--force", "hard life in ghetto"}, Context{
 		Args: []string{"hard life in ghetto"},
 		NonVariable: map[string]bool{
@@ -52,8 +52,8 @@ func TestContext(t *testing.T) {
 		Variable: map[string]string{},
 	})
 
-	check("single shortened non-var flag", []Flag{
-		Flag{Name: "force", Short: "f"},
+	check("single shortened non-var flag", []*Flag{
+		&Flag{Name: "force", Short: "f"},
 	}, []string{"-f", "hard life in ghetto"}, Context{
 		Args: []string{"hard life in ghetto"},
 		NonVariable: map[string]bool{
@@ -62,8 +62,8 @@ func TestContext(t *testing.T) {
 		Variable: map[string]string{},
 	})
 
-	check("separated variable flag", []Flag{
-		Flag{Name: "filter", Variable: true},
+	check("separated variable flag", []*Flag{
+		&Flag{Name: "filter", Variable: true},
 	}, []string{"--filter", "token here"}, Context{
 		Args: []string{},
 		Variable: map[string]string{
@@ -72,8 +72,8 @@ func TestContext(t *testing.T) {
 		NonVariable: map[string]bool{},
 	})
 
-	check("joined empty variable flag", []Flag{
-		Flag{Name: "filter", Variable: true},
+	check("joined empty variable flag", []*Flag{
+		&Flag{Name: "filter", Variable: true},
 	}, []string{`--filter=`}, Context{
 		Args: []string{},
 		Variable: map[string]string{
@@ -82,8 +82,8 @@ func TestContext(t *testing.T) {
 		NonVariable: map[string]bool{},
 	})
 
-	check("joined single-word variable flag", []Flag{
-		Flag{Name: "filter", Variable: true},
+	check("joined single-word variable flag", []*Flag{
+		&Flag{Name: "filter", Variable: true},
 	}, []string{`--filter=token`}, Context{
 		Args: []string{},
 		Variable: map[string]string{
@@ -92,8 +92,8 @@ func TestContext(t *testing.T) {
 		NonVariable: map[string]bool{},
 	})
 
-	check("joined multi-word variable flag", []Flag{
-		Flag{Name: "filter", Variable: true},
+	check("joined multi-word variable flag", []*Flag{
+		&Flag{Name: "filter", Variable: true},
 	}, []string{`--filter=token here`}, Context{
 		Args: []string{},
 		Variable: map[string]string{
@@ -102,8 +102,8 @@ func TestContext(t *testing.T) {
 		NonVariable: map[string]bool{},
 	})
 
-	check("joined single-word shortened variable flag", []Flag{
-		Flag{Name: "filter", Short: "f", Variable: true},
+	check("joined single-word shortened variable flag", []*Flag{
+		&Flag{Name: "filter", Short: "f", Variable: true},
 	}, []string{`-f=token`}, Context{
 		Args: []string{},
 		Variable: map[string]string{
@@ -112,8 +112,8 @@ func TestContext(t *testing.T) {
 		NonVariable: map[string]bool{},
 	})
 
-	check("joined multi-word shortened variable flag", []Flag{
-		Flag{Name: "filter", Short: "f", Variable: true},
+	check("joined multi-word shortened variable flag", []*Flag{
+		&Flag{Name: "filter", Short: "f", Variable: true},
 	}, []string{`-f=token here`}, Context{
 		Args: []string{},
 		Variable: map[string]string{
@@ -122,9 +122,9 @@ func TestContext(t *testing.T) {
 		NonVariable: map[string]bool{},
 	})
 
-	check("sophisticated", []Flag{
-		Flag{Name: "force", Short: "f", Variable: false},
-		Flag{Name: "slug", Variable: true},
+	check("sophisticated", []*Flag{
+		&Flag{Name: "force", Short: "f", Variable: false},
+		&Flag{Name: "slug", Variable: true},
 	}, []string{"-f", "--slug", "dog_03", "Dog Doggson"}, Context{
 		Args: []string{"Dog Doggson"},
 		NonVariable: map[string]bool{
@@ -138,11 +138,11 @@ func TestContext(t *testing.T) {
 	// FAIL TESTS
 	// ==========
 
-	mustFail("setting non-var flag", []Flag{
-		Flag{Name: "force", Variable: false},
+	mustFail("setting non-var flag", []*Flag{
+		&Flag{Name: "force", Variable: false},
 	}, []string{"--force=value"})
 
-	mustFail("missing var flag value", []Flag{
-		Flag{Name: "filter", Variable: true},
+	mustFail("missing var flag value", []*Flag{
+		&Flag{Name: "filter", Variable: true},
 	}, []string{"--filter"})
 }

@@ -68,10 +68,10 @@ func parseFlagSignature(flag string) (string, string) {
 	return flag[:equalPos], flag[equalPos+1:]
 }
 
-func flagByName(flags *[]Flag, name string) *Flag {
-	for i, flag := range *flags {
+func flagByName(flags []*Flag, name string) *Flag {
+	for i, flag := range flags {
 		if flag.Name == name || flag.Short == name {
-			return &(*flags)[i]
+			return flags[i]
 		}
 	}
 
@@ -90,7 +90,7 @@ func newContext(app *Application) *Context {
 	return &ctx
 }
 
-func (a *Application) parseContext(flags []Flag, argv []string) (*Context, error) {
+func (a *Application) parseContext(flags []*Flag, argv []string) (*Context, error) {
 	ctx := newContext(a)
 
 	for i := 0; i < len(argv); i++ {
@@ -102,7 +102,7 @@ func (a *Application) parseContext(flags []Flag, argv []string) (*Context, error
 		}
 
 		name, value := parseFlagSignature(argument)
-		flag := flagByName(&flags, name)
+		flag := flagByName(flags, name)
 
 		if flag == nil {
 			return nil, fmt.Errorf(`option -%s does not exist`, name)
