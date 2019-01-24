@@ -38,9 +38,5 @@ func New(name string) *Application {
 		panic("can't construct an app without a name")
 	}
 
-	return &Application{
-		Command: Command{
-			Name: name,
-		},
-	}
+	return &Application{Name: name}
 }

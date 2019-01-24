@@ -17,17 +17,15 @@ var (
 // command, but it will use "version" command instead if you
 // provide one.
 type Application struct {
+	Name    string // `go`
+	Brief   string // `Go is a tool for managing Go source code.`
 	Version string // `1.5`
-	Command
 
 	Commands []*Command
 	Topics   []*Topic
 	Groups   []*Group
 
-	// Default is a default handler. It gets executed if there are
-	// no command line arguments (except the program name), when
-	// otherwise, by default, the help entry is being shown.
-	Default CmdHandler
+	zeroLengthCmd bool
 
 	ungroupedCmdsCount int
 }
@@ -107,6 +105,9 @@ func (a *Application) AddCommand(command *Command) {
 	a.Commands = append(a.Commands, command)
 
 	newCmd := a.Commands[len(a.Commands)-1]
+	if len(newCmd.Name) == 0 {
+		a.zeroLengthCmd = true
+	}
 	if newCmd.Group != "" {
 		group := a.groupByName(newCmd.Group)
 		if group == nil {
@@ -134,13 +135,13 @@ func (a *Application) Run() int {
 	arguments := os.Args[1:]
 	// $ program
 	//           ^ no args
-	if len(arguments) == 0 {
-		if a.Default == nil {
+	if len(arguments) == 0 || ((len(arguments) > 0) && looksLikeFlag(arguments[0])) {
+		if a.zeroLengthCmd {
+			arguments = append([]string{""}, arguments...)
+		} else {
 			a.println(a.globalHelp())
 			return 0
 		}
-
-		return a.Default(newContext(a))
 	}
 
 	yankeeGoHome := func(errMsg string) {
@@ -155,10 +156,14 @@ func (a *Application) Run() int {
 		// $ program help
 		//           ^ one argument
 		if len(arguments) <= 1 {
-			a.println(a.globalHelp())
-			return 0
+			if a.zeroLengthCmd {
+				arguments = append(arguments, "")
+			} else {
+				a.println(a.globalHelp())
+				return 0
+			}
 		}
-
+		
 		command := a.commandByName(arguments[1])
 		if command != nil {
 			a.println(a.commandHelp(command))
