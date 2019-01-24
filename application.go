@@ -17,9 +17,8 @@ var (
 // command, but it will use "version" command instead if you
 // provide one.
 type Application struct {
-	Name    string // `go`
-	Brief   string // `Go is a tool for managing Go source code.`
 	Version string // `1.5`
+	Command
 
 	Commands []*Command
 	Topics   []*Topic
