@@ -5,7 +5,7 @@ import (
 )
 
 var App = &climax.Application{
-	Name: "demo",
-	Brief: "Demo is a funky demonstation of Climax capabilities.",
+	Name:    "demo",
+	Brief:   "Demo is a funky demonstation of Climax capabilities.",
 	Version: "stable",
 }

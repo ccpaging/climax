@@ -21,11 +21,10 @@ type Application struct {
 	Brief   string // `Go is a tool for managing Go source code.`
 	Version string // `1.5`
 
+	Root     *Command
 	Commands []*Command
 	Topics   []*Topic
 	Groups   []*Group
-
-	zeroLengthCmd bool
 
 	ungroupedCmdsCount int
 }
@@ -105,9 +104,6 @@ func (a *Application) AddCommand(command *Command) {
 	a.Commands = append(a.Commands, command)
 
 	newCmd := a.Commands[len(a.Commands)-1]
-	if len(newCmd.Name) == 0 {
-		a.zeroLengthCmd = true
-	}
 	if newCmd.Group != "" {
 		group := a.groupByName(newCmd.Group)
 		if group == nil {
@@ -133,20 +129,27 @@ func (a *Application) Run() int {
 		panic("shell-provided arguments are not present")
 	}
 	arguments := os.Args[1:]
-	// $ program
-	//           ^ no args
-	if len(arguments) == 0 || ((len(arguments) > 0) && looksLikeFlag(arguments[0])) {
-		if a.zeroLengthCmd {
-			arguments = append([]string{""}, arguments...)
-		} else {
-			a.println(a.globalHelp())
-			return 0
-		}
-	}
 
 	yankeeGoHome := func(errMsg string) {
 		a.printerr(errMsg)
 		os.Exit(1)
+	}
+
+	// $ program
+	// $ program -flag
+	//           ^ no subcommand
+	if len(arguments) == 0 || ((len(arguments) > 0) && looksLikeFlag(arguments[0])) {
+		if a.Root != nil {
+			context, err := a.parseContext(a.Root.Flags, arguments)
+			if err != nil {
+				yankeeGoHome(err.Error())
+			}
+
+			return a.Root.Run(context)
+		}
+
+		a.println(a.globalHelp())
+		return 0
 	}
 
 	subcommandName := arguments[0]
@@ -156,14 +159,14 @@ func (a *Application) Run() int {
 		// $ program help
 		//           ^ one argument
 		if len(arguments) <= 1 {
-			if a.zeroLengthCmd {
-				arguments = append(arguments, "")
+			if a.Root != nil {
+				a.println(a.commandHelp(a.Root))
 			} else {
 				a.println(a.globalHelp())
-				return 0
 			}
+			return 0
 		}
-		
+
 		command := a.commandByName(arguments[1])
 		if command != nil {
 			a.println(a.commandHelp(command))

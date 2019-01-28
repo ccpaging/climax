@@ -11,8 +11,8 @@ func main() {
 	demo.Brief = "Demo is a funky demonstation of Climax capabilities."
 	demo.Version = "stable"
 
-	joinCmd := &climax.Command{
-		Name:  "join",
+	demo.Root = &climax.Command{
+		Name:  "",
 		Brief: "merges the strings given",
 		Usage: `[-s=] "a few" distinct strings`,
 		Help:  `Lorem ipsum dolor sit amet amet sit todor...`,
@@ -46,7 +46,7 @@ func main() {
 		},
 	}
 
-	demo.AddCommand(joinCmd)
+	//demo.AddCommand(joinCmd)
 	demo.Run()
 }
 

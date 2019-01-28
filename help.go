@@ -40,7 +40,7 @@ Available options:
 {{if .Examples}}
 Examples:
 {{$app := .App}}{{$cmd := .Name}}{{range .Examples}}
-	$ {{$app}} {{$cmd}} {{.Usecase}}
+	$ {{$app}} {{if $cmd}}{{$cmd}} {{end}}{{.Usecase}}
 		{{.Description | tabout}}
 {{end}}{{end}}`
 
@@ -74,7 +74,10 @@ func alignMultilineHelp(text string) string {
 
 func commandUsage(command *Command) string {
 	if command.Usage != "" {
-		return command.Name + " " + command.Usage
+		if command.Name != "" {
+			return command.Name + " " + command.Usage
+		}
+		return command.Usage
 	}
 
 	usage := command.Name
